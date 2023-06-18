@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         Contact contact = contactArrayList.get(position);
         contact.setName(name);
         contact.setEmail(email);
-        contact.setName(number);
+        contact.setNumber(number);
 
         db.updateContact(contact);
         contactArrayList.set(position,contact);
