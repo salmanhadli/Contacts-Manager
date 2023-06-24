@@ -5,8 +5,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +20,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
     private Context context;
     private ArrayList<Contact> contactList;
     private MainActivity mainActivity;
+
+    public ContactsAdapter(Context context, ArrayList<Contact> contacts, MainActivity mainActivity) {
+        this.context = context;
+        this.contactList = contacts;
+        this.mainActivity = mainActivity;
+    }
 
     @NonNull
     @Override
@@ -50,7 +56,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
         return contactList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView email;
         public TextView number;
@@ -62,11 +68,5 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyView
             this.email = itemView.findViewById(R.id.email);
             this.number = itemView.findViewById(R.id.number);
         }
-    }
-
-    public ContactsAdapter(Context context, ArrayList<Contact> contacts, MainActivity mainActivity) {
-        this.context = context;
-        this.contactList = contacts;
-        this.mainActivity = mainActivity;
     }
 }
