@@ -2,6 +2,8 @@ package com.example.contactsmanager;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +27,9 @@ import com.example.contactsmanager.db.entity.Contact;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Contact List
 //        contactArrayList.addAll(db.getAllContacts());
-        contactArrayList.addAll(contactsAppDatabase.getContactDAO().getAllContacts());
+//        contactArrayList.addAll(contactsAppDatabase.getContactDAO().getAllContacts());
+        displayAllContactsInBackground();
 
         contactsAdapter = new ContactsAdapter(this, contactArrayList, MainActivity.this);
 
@@ -178,6 +184,26 @@ public class MainActivity extends AppCompatActivity {
 //        db.deleteContact(contact);
         contactsAppDatabase.getContactDAO().deleteContact(contact);
         contactsAdapter.notifyDataSetChanged();
+    }
+
+    private void displayAllContactsInBackground () {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                // execute the background work
+                contactArrayList.addAll(contactsAppDatabase.getContactDAO().getAllContacts());
+
+                // executed after gb work finished
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        contactsAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 
 
