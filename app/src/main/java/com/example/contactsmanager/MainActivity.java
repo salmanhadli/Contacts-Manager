@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,13 +22,14 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.contactsmanager.db.ContactsAppDatabase;
 import com.example.contactsmanager.db.entity.Contact;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -69,11 +71,35 @@ public class MainActivity extends AppCompatActivity {
 
         // Recycler View
         recyclerView = findViewById(R.id.recyclerViewContacts);
+
+        // Callbacks
+        RoomDatabase.Callback dbCallback = new RoomDatabase.Callback() {
+            @Override
+            public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                super.onCreate(db);
+
+                // These are 4 contacts already created in the app when installed (Built-in contacts)
+//                createContact("Bill Gates", "billGates@microsoft.com", "1234567890");
+//                createContact("Nicoli Tesla", "tesla@gmail.com", "1112223334");
+//                createContact("Mark Zukerberg", "markZuck@facebook.com", "44455556667");
+//                createContact("Elon Tusk", "elonTusk@microsoft.com", "0987654321");
+                Log.i("TAG", "Database has been created");
+            }
+
+            @Override
+            public void onOpen(@NonNull SupportSQLiteDatabase db) {
+                super.onOpen(db);
+
+                Log.i("TAG", "Database has been opened");
+            }
+        };
+
+
         contactsAppDatabase = Room.databaseBuilder(
                 getApplicationContext(),
                 ContactsAppDatabase.class,
                 "ContactDB"
-        ).allowMainThreadQueries().build();
+        ).addCallback(dbCallback).build();
 //        db = new DatabaseHelper(this);
 
         // Contact List
@@ -186,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         contactsAdapter.notifyDataSetChanged();
     }
 
-    private void displayAllContactsInBackground () {
+    private void displayAllContactsInBackground() {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executorService.execute(new Runnable() {
